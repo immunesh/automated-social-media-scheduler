@@ -1,0 +1,294 @@
+{{define "content"}}
+<div class="row py-4">
+    <div class="col-12">
+        <h1>Settings</h1>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Account Settings</h5>
+            </div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" value="{{.user.FirstName}}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" value="{{.user.LastName}}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" value="{{.user.Email}}" readonly>
+                        <div class="form-text">Email cannot be changed</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Current Plan</label>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-primary me-2">{{.user.Plan}}</span>
+                            <a href="#" class="btn btn-sm btn-outline-primary">Upgrade Plan</a>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Security</h5>
+            </div>
+            <div class="card-body">
+                <form id="passwordForm">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" required minlength="6">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-warning">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Connected Social Media Accounts</h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#connectAccountModal">
+                    <i class="fas fa-plus"></i> Connect Account
+                </button>
+            </div>
+            <div class="card-body">
+                {{if .user.SocialAccounts}}
+                <div class="row g-3">
+                    {{range .user.SocialAccounts}}
+                    <div class="col-md-6">
+                        <div class="card border-{{if .IsActive}}success{{else}}secondary{{end}}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fab fa-{{.Platform}} fa-2x text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">{{.AccountName}}</h6>
+                                            <small class="text-muted text-capitalize">{{.Platform}}</small>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-{{if .IsActive}}success{{else}}secondary{{end}} mb-2">
+                                            {{if .IsActive}}Active{{else}}Inactive{{end}}
+                                        </span>
+                                        <br>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="disconnectAccount({{.ID}})">
+                                            <i class="fas fa-unlink"></i> Disconnect
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        Connected: {{.CreatedAt.Format "Jan 2, 2006"}}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+                {{else}}
+                <div class="text-center py-5">
+                    <i class="fas fa-link fa-4x text-muted mb-3"></i>
+                    <h4>No connected accounts</h4>
+                    <p class="text-muted">Connect your social media accounts to start scheduling posts across multiple platforms.</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#connectAccountModal">
+                        Connect Your First Account
+                    </button>
+                </div>
+                {{end}}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Notification Preferences</h5>
+            </div>
+            <div class="card-body">
+                <form id="notificationForm">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                        <label class="form-check-label" for="emailNotifications">
+                            Email notifications for post publishing
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="failureNotifications" checked>
+                        <label class="form-check-label" for="failureNotifications">
+                            Notify me when posts fail to publish
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="weeklyReports" checked>
+                        <label class="form-check-label" for="weeklyReports">
+                            Weekly analytics reports
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="marketingEmails">
+                        <label class="form-check-label" for="marketingEmails">
+                            Marketing and promotional emails
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Preferences</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Connect Account Modal -->
+<div class="modal fade" id="connectAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Connect Social Media Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">Choose a platform to connect to your account:</p>
+                
+                <div class="d-grid gap-3">
+                    <button class="btn btn-outline-primary btn-lg" onclick="connectPlatform('facebook')">
+                        <i class="fab fa-facebook fa-lg me-2"></i> Connect Facebook
+                    </button>
+                    
+                    <button class="btn btn-outline-info btn-lg" onclick="connectPlatform('twitter')">
+                        <i class="fab fa-twitter fa-lg me-2"></i> Connect Twitter
+                    </button>
+                    
+                    <button class="btn btn-outline-danger btn-lg" onclick="connectPlatform('instagram')">
+                        <i class="fab fa-instagram fa-lg me-2"></i> Connect Instagram
+                    </button>
+                    
+                    <button class="btn btn-outline-primary btn-lg" onclick="connectPlatform('linkedin')">
+                        <i class="fab fa-linkedin fa-lg me-2"></i> Connect LinkedIn
+                    </button>
+                    
+                    <button class="btn btn-outline-dark btn-lg" onclick="connectPlatform('tiktok')">
+                        <i class="fab fa-tiktok fa-lg me-2"></i> Connect TikTok
+                    </button>
+                </div>
+                
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Demo Mode:</strong> Social media connections are simulated for demonstration purposes.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Profile form handler
+document.getElementById('profileForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        first_name: document.getElementById('firstName').value,
+        last_name: document.getElementById('lastName').value
+    };
+    
+    fetch('/api/profile', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getCookie('auth_token')
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.user) {
+            alert('Profile updated successfully!');
+        } else {
+            alert('Error updating profile');
+        }
+    });
+});
+
+function connectPlatform(platform) {
+    // Simulate OAuth flow
+    const accountName = prompt(`Enter your ${platform} username or page name:`);
+    if (accountName) {
+        fetch('/api/social-accounts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getCookie('auth_token')
+            },
+            body: JSON.stringify({
+                platform: platform,
+                account_name: accountName,
+                account_id: 'demo_' + platform + '_' + Date.now()
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.social_account) {
+                alert(`${platform} account connected successfully!`);
+                location.reload();
+            } else {
+                alert('Error connecting account');
+            }
+        });
+    }
+}
+
+function disconnectAccount(accountId) {
+    if (confirm('Are you sure you want to disconnect this account?')) {
+        fetch(`/api/social-accounts/${accountId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + getCookie('auth_token')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Account disconnected successfully!');
+                location.reload();
+            } else {
+                alert('Error disconnecting account');
+            }
+        });
+    }
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+}
+</script>
+{{end}}
