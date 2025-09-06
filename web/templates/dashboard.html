@@ -1,0 +1,158 @@
+{{define "content"}}
+<div class="row py-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Dashboard</h1>
+            <div>
+                <span class="badge bg-primary">{{.user.Plan}} Plan</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Connected Accounts</h6>
+                        <h3>{{len .user.SocialAccounts}}</h3>
+                    </div>
+                    <i class="fas fa-share-alt fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Posts</h6>
+                        <h3>{{len .user.Posts}}</h3>
+                    </div>
+                    <i class="fas fa-edit fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Scheduled</h6>
+                        <h3>0</h3>
+                    </div>
+                    <i class="fas fa-clock fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">This Month</h6>
+                        <h3>{{len .posts}}</h3>
+                    </div>
+                    <i class="fas fa-calendar fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Posts</h5>
+            </div>
+            <div class="card-body">
+                {{if .posts}}
+                <div class="list-group list-group-flush">
+                    {{range .posts}}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-1">{{.Title}}</h6>
+                                <p class="mb-1">{{.Content}}</p>
+                                <small class="text-muted">{{.CreatedAt.Format "Jan 2, 2006 15:04"}}</small>
+                            </div>
+                            <span class="badge bg-{{if eq .Status "published"}}success{{else if eq .Status "scheduled"}}primary{{else}}secondary{{end}}">
+                                {{.Status}}
+                            </span>
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+                {{else}}
+                <div class="text-center py-4">
+                    <i class="fas fa-edit fa-3x text-muted mb-3"></i>
+                    <h5>No posts yet</h5>
+                    <p class="text-muted">Create your first social media post to get started.</p>
+                    <a href="/posts" class="btn btn-primary">Create Post</a>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Connected Accounts</h5>
+            </div>
+            <div class="card-body">
+                {{if .user.SocialAccounts}}
+                <div class="list-group list-group-flush">
+                    {{range .user.SocialAccounts}}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fab fa-{{.Platform}} fa-lg text-primary me-2"></i>
+                            <strong>{{.AccountName}}</strong>
+                        </div>
+                        <span class="badge bg-{{if .IsActive}}success{{else}}secondary{{end}}">
+                            {{if .IsActive}}Active{{else}}Inactive{{end}}
+                        </span>
+                    </div>
+                    {{end}}
+                </div>
+                {{else}}
+                <div class="text-center py-4">
+                    <i class="fas fa-link fa-3x text-muted mb-3"></i>
+                    <h6>No connected accounts</h6>
+                    <p class="text-muted">Connect your social media accounts to start scheduling posts.</p>
+                    <a href="/settings" class="btn btn-outline-primary btn-sm">Connect Accounts</a>
+                </div>
+                {{end}}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/posts" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create New Post
+                    </a>
+                    <a href="/settings" class="btn btn-outline-primary">
+                        <i class="fas fa-link"></i> Connect Account
+                    </a>
+                    <a href="/analytics" class="btn btn-outline-info">
+                        <i class="fas fa-chart-bar"></i> View Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
